@@ -1,6 +1,6 @@
 name: "video"
 host: "127.0.0.1"
-prot: 9701
+prot: 9704
 user-server:
   host: "127.0.0.1"
   port: 9801

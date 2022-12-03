@@ -4,10 +4,10 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	"message/config"
+	"message/global"
 	"os"
 	"strconv"
-	"video/config"
-	"video/global"
 )
 
 func InitConfig() {

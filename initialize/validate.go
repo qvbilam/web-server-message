@@ -9,7 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	enTranslations "github.com/go-playground/validator/v10/translations/en"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
-	"video/global"
+	"message/global"
 )
 
 func InitValidateTran(locale string) error {
