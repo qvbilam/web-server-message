@@ -1,0 +1,11 @@
+name: "video"
+host: "127.0.0.1"
+prot: 9701
+user-server:
+  host: "127.0.0.1"
+  port: 9801
+  name: "grpc-user-server"
+video-server:
+  host: "127.0.0.1"
+  port: 9802
+  name: "grpc-video-server"
