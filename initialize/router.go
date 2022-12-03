@@ -1,6 +1,7 @@
 package initialize
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -27,8 +28,9 @@ func InitRouters() *gin.Engine {
 		})
 	})
 
-	router.GET("/", func(ctx *gin.Context) {
-		paramUserId := ctx.Param("user_id")
+	router.GET("/ws", func(ctx *gin.Context) {
+		paramUserId := ctx.Query("u")
+		fmt.Println(paramUserId)
 		userIdInt, _ := strconv.Atoi(paramUserId)
 		userId := int64(userIdInt)
 
@@ -46,17 +48,21 @@ func InitRouters() *gin.Engine {
 		}(conn)
 
 		// 创建频道
-		fmt.Println("创建频道")
 		userClient[userId] = &business.SocketClient{
-			Conn: conn,
+			UserId:           userId,
+			Conn:             conn,
+			UserMessageQueue: make(chan []byte, 50),
 		}
 
-		// 发送用户信息
-		fmt.Println("发送消息准备")
-		sendUser(userId, []byte("你好"))
-		fmt.Println("发送消息完毕")
+		// 发送数据
+		go write(userClient[userId])
+		// 接受数据
+		go accept(userClient[userId])
 
-		write(userClient[userId])
+		// 发送用户信息
+		sendUser(userId, []byte("你好"))
+		sendUser(userId, []byte("我是你爹"))
+
 		<-ch
 	})
 
@@ -65,26 +71,60 @@ func InitRouters() *gin.Engine {
 
 // 用户消息推送到队列
 func sendUser(userId int64, message []byte) {
-	client, exist := userClient[userId]
-	fmt.Println("是否存在:", exist)
-	//if exists {
-	client.MessageQueue <- message
-	fmt.Println("nmd")
-	fmt.Println(client.MessageQueue)
-	//}
+	client, exists := userClient[userId]
+	if exists {
+		client.UserMessageQueue <- message
+	}
 }
 
 // 推送消息
 func write(client *business.SocketClient) {
 	for {
 		select {
-		case msg := <-client.MessageQueue:
+		case msg := <-client.UserMessageQueue:
+			client.Conn.WriteJSON(map[string]interface{}{
+				"fromUserId": client.UserId,
+				"toUserId":   "",
+				"context":    "hello",
+			})
 			if err := client.Conn.WriteMessage(websocket.TextMessage, msg); err != nil {
 				fmt.Printf("发送消息失败，内容: %s\n", msg)
 				return
 			}
-		default:
-			fmt.Println("发个鸡")
 		}
 	}
+}
+
+// 接受消息
+func accept(client *business.SocketClient) {
+	for {
+		_, data, err := client.Conn.ReadMessage()
+		if err != nil {
+			if websocket.IsCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
+				fmt.Printf("[info]退出链接, 用户:%d: \n", client.UserId)
+				break
+			}
+			fmt.Printf("[error]接受数据失败: %s\n", err)
+			break
+		}
+		// 分发数据
+		dispatch(data)
+	}
+}
+
+func dispatch(data []byte) {
+	type Message struct {
+		UserId  int64  `json:"user_id"`
+		Message string `json:"message"`
+	}
+	fmt.Println("接受到数据", string(data))
+	// 解析数据
+	message := Message{}
+	if err := json.Unmarshal(data, &message); err != nil {
+		fmt.Println("解析数据失败", err.Error())
+		return
+	}
+	fmt.Println("解析数据为:", message)
+	fmt.Println(message)
+	sendUser(message.UserId, data)
 }

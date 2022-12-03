@@ -3,6 +3,7 @@ package business
 import "github.com/gorilla/websocket"
 
 type SocketClient struct {
-	Conn         *websocket.Conn
-	MessageQueue chan []byte
+	UserId           int64
+	Conn             *websocket.Conn
+	UserMessageQueue chan []byte
 }
