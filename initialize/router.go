@@ -82,11 +82,6 @@ func write(client *business.SocketClient) {
 	for {
 		select {
 		case msg := <-client.UserMessageQueue:
-			client.Conn.WriteJSON(map[string]interface{}{
-				"fromUserId": client.UserId,
-				"toUserId":   "",
-				"context":    "hello",
-			})
 			if err := client.Conn.WriteMessage(websocket.TextMessage, msg); err != nil {
 				fmt.Printf("发送消息失败，内容: %s\n", msg)
 				return
