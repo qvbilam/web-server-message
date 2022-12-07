@@ -76,6 +76,6 @@ func PushExchange(exchangeName string, body []byte) {
 			Body: body,
 		},
 	); err != nil {
-		fmt.Printf("send message")
+		fmt.Printf("send message err: %s", err)
 	}
 }
