@@ -22,4 +22,7 @@ go get -u github.com/gin-gonic/gin/binding
 
 # websocket
 go get -u github.com/gorilla/websocket
+
+# rabbitmq
+go get -u github.com/streadway/amqp
 ```

@@ -15,6 +15,8 @@ func main() {
 	initialize.InitLogger()
 	// 初始化配置
 	initialize.InitConfig()
+	// 初始化队列
+	initialize.InitQueue()
 	// 初始化路由
 	Router := initialize.InitRouters()
 	// 初始化表单验证

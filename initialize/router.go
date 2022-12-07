@@ -74,6 +74,8 @@ func sendUser(userId int64, message []byte) {
 	client, exists := userClient[userId]
 	if exists {
 		client.UserMessageQueue <- message
+	} else {
+		
 	}
 }
 
