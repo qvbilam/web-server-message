@@ -18,7 +18,7 @@ var u = websocket.Upgrader{
 	},
 }
 
-var userClient map[int64]*business.SocketClient = make(map[int64]*business.SocketClient, 0)
+var userClient map[string]*business.SocketClient = make(map[string]*business.SocketClient, 0)
 
 func Handel(ctx *gin.Context) {
 	paramUserId := ctx.Query("u")
@@ -40,35 +40,36 @@ func Handel(ctx *gin.Context) {
 	}(conn)
 
 	// 创建频道
-	userClient[userId] = &business.SocketClient{
+	clientUserId := strconv.Itoa(int(userId))
+	userClient[clientUserId] = &business.SocketClient{
 		UserId:           userId,
 		Conn:             conn,
 		UserMessageQueue: make(chan []byte, 50),
 	}
 
 	// 发送数据
-	go write(userClient[userId])
+	go write(userClient[clientUserId])
 	// 接受数据
-	go accept(userClient[userId])
+	go accept(userClient[clientUserId])
 
 	// 发送用户信息
 	privateObj := resource.PrivateObject{
 		SendUserId: "system",
 		TargetId:   fmt.Sprintf("%d", userId),
 		ObjectName: enum.MsgTypeTxt,
-		Content: resource.TextObject{
-			Content: "你好",
-			User:    resource.UserObject{},
+		Content: resource.Text{
+			Content: "你好，欢迎链接",
+			User:    resource.User{},
 			Extra:   "",
 		},
 	}
-	sendUser(userId, privateObj.Resource())
+	sendUser(clientUserId, privateObj.Encode())
 
 	<-ch
 }
 
 // 用户消息推送到队列
-func sendUser(userId int64, message []byte) {
+func sendUser(userId string, message []byte) {
 	client, exists := userClient[userId]
 	if exists {
 		client.UserMessageQueue <- message
@@ -103,19 +104,38 @@ func accept(client *business.SocketClient) {
 			break
 		}
 		// 分发数据
-		dispatch(data)
+		senderId := strconv.Itoa(int(client.UserId))
+		dispatch(senderId, data)
 	}
 }
 
-func dispatch(data []byte) {
+func dispatch(senderId string, data []byte) {
 	fmt.Println("接受到数据", string(data))
-	// 解析数据
-	message := resource.PrivateObject{}
-	if err := json.Unmarshal(data, &message); err != nil {
-		fmt.Println("解析数据失败", err.Error())
-		return
-	}
-	fmt.Printf("解析数据为: %+v\n", message)
 
-	//sendUser(message.TargetId, data)
+	// 解析数据
+	type objType struct {
+		Type string `json:"type"`
+	}
+
+	t := objType{}
+	err := json.Unmarshal(data, &t)
+	if err != nil { //类型错误: 缺少type
+		t.Type = "lack-type"
+	}
+
+	switch t.Type {
+	case enum.ObjTypePrivate:
+		o := resource.PrivateObject{}
+		d := o.Decode(data)
+
+		sendUser(d.TargetId, data)
+	default:
+		sendUser(senderId, []byte(fmt.Sprintf("暂不支持的消息类型, 内容: %s,", data)))
+	}
+
+	//toUser := message.TargetId
+	//target, _ := strconv.Atoi(toUser)
+	//
+	//fmt.Printf("接受消息: %d", target)
+	//sendUser(int64(target), data)
 }

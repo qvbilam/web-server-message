@@ -1,5 +1,9 @@
 package enum
 
+const ObjTypePrivate = "private"
+const ObjTypeRoom = "room"
+const ObjTypeGroup = "group"
+
 const MsgTypeTxt = "TextMsg"            // 文本消息
 const MsgTypeImg = "ImageMsg"           // 图片消息
 const MsgTypeVoice = "VoiceMsg"         // 语音消息
