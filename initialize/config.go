@@ -1,7 +1,9 @@
 package initialize
 
 import (
+	"fmt"
 	"github.com/fsnotify/fsnotify"
+	"github.com/namsral/flag"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"message/config"
@@ -13,6 +15,7 @@ import (
 func InitConfig() {
 	initEnvConfig()
 	initViperConfig()
+	initFlagConfig()
 }
 
 func initEnvConfig() {
@@ -61,4 +64,26 @@ func initViperConfig() {
 		_ = v.ReadInConfig()
 		_ = v.Unmarshal(&global.ServerConfig)
 	})
+}
+
+func initFlagConfig() {
+	portString := flag.String("port", "9704", "server port")
+	queueSuffixString := flag.String("suffix", "", "server rabbitmq queue suffix")
+
+	flag.Parse()
+
+	fmt.Println(*portString)
+	fmt.Println(*queueSuffixString)
+
+	//fmt.Println(port)
+	//fmt.Println(queueSuffix)
+
+	if portString != nil {
+		p, _ := strconv.Atoi(*portString)
+		global.ServerConfig.Port = int64(p)
+	}
+
+	if queueSuffixString != nil {
+		global.ServerConfig.RabbitMQServerConfig.QueueSuffix = *queueSuffixString
+	}
 }

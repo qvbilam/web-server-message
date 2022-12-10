@@ -48,8 +48,8 @@ func CreateQueue(queueName, exchangeName string) {
 	}
 }
 
-// Consume 消费消息
-func Consume(queueName string) {
+// ConsumeQueue 消费消息
+func ConsumeQueue(queueName string) {
 	ch, err := global.MessageQueueClient.Channel()
 	if err != nil {
 		zap.S().Fatalf("%s dial error: %s", "队列通道", err)
@@ -60,11 +60,13 @@ func Consume(queueName string) {
 	}
 
 	for msg := range deliveries {
-		fmt.Printf("read message: %s\n", msg.Body)
+		//fmt.Printf("read message: %s\n", msg.Body)
+		// 传递到消息
+		Dispatch("system", msg.Body, false)
 	}
 }
 
-// PushExchange 发送消息
+// PushExchange 发送交换机消息
 func PushExchange(exchangeName string, body []byte) {
 	ch, _ := global.MessageQueueClient.Channel()
 	if err := ch.Publish(
@@ -76,6 +78,28 @@ func PushExchange(exchangeName string, body []byte) {
 			Body: body,
 		},
 	); err != nil {
-		fmt.Printf("send message err: %s", err)
+		fmt.Printf("send exchange message err: %s", err)
 	}
+}
+
+// PushQueue 发送队列消息
+func PushQueue(queueName string, body []byte) {
+	ch, _ := global.MessageQueueClient.Channel()
+	err := ch.Publish(
+		"",
+		queueName,
+		false,
+		false,
+		amqp.Publishing{
+			Body: body,
+		})
+	if err != nil {
+		fmt.Printf("send queue message err: %s", err)
+	}
+}
+
+// MessagePushExchange 广播
+func MessagePushExchange(body []byte) {
+	exchangeName := global.ServerConfig.RabbitMQServerConfig.MessageExchangeName
+	PushExchange(exchangeName, body)
 }
