@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"go.uber.org/zap"
+	proto "message/api/qvbilam/message/v1"
+	"message/business"
 	"message/global"
 	"message/initialize"
 	"os"
@@ -15,8 +18,6 @@ func main() {
 	initialize.InitLogger()
 	// 初始化配置
 	initialize.InitConfig()
-	// 初始化队列
-	initialize.InitQueue()
 	// 初始化路由
 	Router := initialize.InitRouters()
 	// 初始化表单验证
@@ -25,6 +26,8 @@ func main() {
 	}
 	// 初始化grpc客户端
 	initialize.InitServer()
+	// 初始化队列
+	initialize.InitQueue()
 
 	Name := global.ServerConfig.Name
 	Host := "0.0.0.0"
@@ -45,5 +48,18 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	// 服务注销
+
+	// 删除队列
+	business.DeleteQueue(global.ServerConfig.RabbitMQServerConfig.MessageQueueName)
+	if global.MessageServerClient != nil {
+		_, err := global.MessageServerClient.DeleteQueue(context.Background(), &proto.UpdateQueueRequest{
+			Name: global.ServerConfig.RabbitMQServerConfig.MessageQueueName,
+		})
+		if err != nil {
+			zap.S().Infof("删除队列: %s,失败: %s", global.ServerConfig.RabbitMQServerConfig.MessageQueueName, err)
+		} else {
+			zap.S().Infof("删除队列: %s,成功", global.ServerConfig.RabbitMQServerConfig.MessageQueueName)
+		}
+	}
 	zap.S().Info("服务注销成功")
 }

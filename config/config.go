@@ -6,7 +6,7 @@ type ServerConfig struct {
 	Port                 int64                `mapstructure:"port" json:"port"`
 	Tags                 []string             `mapstructure:"tags" json:"tags"`
 	UserServerConfig     UserServerConfig     `mapstructure:"user-server" json:"user-server"`
-	VideoServerConfig    VideoServerConfig    `mapstructure:"video-server" json:"video-server"`
+	MessageServerConfig  MessageServerConfig  `mapstructure:"message-server" json:"message-server"`
 	RabbitMQServerConfig RabbitMQServerConfig `mapstructure:"rabbit-server" json:"rabbit-server"`
 }
 
@@ -16,7 +16,7 @@ type UserServerConfig struct {
 	Name string `mapstructure:"name" json:"name"`
 }
 
-type VideoServerConfig struct {
+type MessageServerConfig struct {
 	Host string `mapstructure:"host" json:"host"`
 	Port int64  `mapstructure:"port" json:"port"`
 	Name string `mapstructure:"name" json:"name"`

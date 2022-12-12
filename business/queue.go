@@ -48,6 +48,19 @@ func CreateQueue(queueName, exchangeName string) {
 	}
 }
 
+func DeleteQueue(queueName string) {
+	ch, err := global.MessageQueueClient.Channel()
+	if err != nil {
+		zap.S().Fatalf("%s dial error: %s", "队列通道", err)
+	}
+	_, err = ch.QueueDelete(queueName, false, true, true)
+	if err != nil {
+		// 删除队列
+		return
+	}
+	// 删除队列失败
+}
+
 // ConsumeQueue 消费消息
 func ConsumeQueue(queueName string) {
 	ch, err := global.MessageQueueClient.Channel()

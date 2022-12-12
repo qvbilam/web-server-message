@@ -21,7 +21,7 @@ func InitConfig() {
 func initEnvConfig() {
 	serverPort, _ := strconv.Atoi(os.Getenv("PORT"))
 	userServerPort, _ := strconv.Atoi(os.Getenv("USER-SERVER_PORT"))
-	videoServerPort, _ := strconv.Atoi(os.Getenv("VIDEO-SERVER_PORT"))
+	messageServerPort, _ := strconv.Atoi(os.Getenv("MESSAGE-SERVER_PORT"))
 
 	if global.ServerConfig == nil {
 		global.ServerConfig = &config.ServerConfig{}
@@ -35,9 +35,9 @@ func initEnvConfig() {
 	global.ServerConfig.UserServerConfig.Host = os.Getenv("USER-SERVER_NAME")
 	global.ServerConfig.UserServerConfig.Port = int64(userServerPort)
 
-	global.ServerConfig.VideoServerConfig.Name = os.Getenv("VIDEO-SERVER_HOST")
-	global.ServerConfig.VideoServerConfig.Host = os.Getenv("VIDEO-SERVER_NAME")
-	global.ServerConfig.VideoServerConfig.Port = int64(videoServerPort)
+	global.ServerConfig.MessageServerConfig.Name = os.Getenv("MESSAGE-SERVER_HOST")
+	global.ServerConfig.MessageServerConfig.Host = os.Getenv("MESSAGE-SERVER_NAME")
+	global.ServerConfig.MessageServerConfig.Port = int64(messageServerPort)
 }
 
 // initViperConfig 初始化配置 > viper 配置包

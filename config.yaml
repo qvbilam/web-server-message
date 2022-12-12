@@ -5,10 +5,10 @@ user-server:
   host: "127.0.0.1"
   port: 9801
   name: "grpc-user-server"
-video-server:
+message-server:
   host: "127.0.0.1"
-  port: 9802
-  name: "grpc-video-server"
+  port: 9804
+  name: "grpc-message-server"
 rabbit-server:
   host: "127.0.0.1"
   port: 5672
