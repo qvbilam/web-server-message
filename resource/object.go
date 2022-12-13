@@ -7,8 +7,8 @@ import (
 
 type PrivateObject struct {
 	Type       string      `json:"type"`
-	SendUserId string      `json:"send_user_id"`
-	TargetId   string      `json:"target_id"`
+	SendUserId int64       `json:"send_user_id"`
+	TargetId   int64       `json:"target_id"`
 	ObjectName string      `json:"object_name"`
 	Content    interface{} `json:"content"`
 }

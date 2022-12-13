@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"go.uber.org/zap"
 	"message/enum"
-	"message/resource"
-	"strconv"
 )
 
 type SocketClient struct {
@@ -15,24 +14,16 @@ type SocketClient struct {
 	UserMessageQueue chan []byte
 }
 
-var UserClient map[string]*SocketClient = make(map[string]*SocketClient, 0)
+var UserClient map[int64]*SocketClient = make(map[int64]*SocketClient, 0)
 
 // SendUser 用户消息推送到队列
-func SendUser(userId string, message []byte, isLocal bool) {
+func SendUser(userId int64, message []byte) {
 	client, exists := UserClient[userId]
-
-	fmt.Printf("[info]webscoket连接用户: %v\n", getClientUserIds())
 
 	if exists {
 		client.UserMessageQueue <- message
-		fmt.Printf("[info]尝试向本机用户: %s, 发送消息\n", userId)
+		fmt.Printf("[info]尝试向本机用户: %d, 发送消息\n", userId)
 		return
-	}
-
-	// 本地消息推送到交换机中
-	if isLocal {
-		fmt.Printf("[info]接受用户: %s, 未连到本地，消息推送至交换机", userId)
-		MessagePushExchange(message)
 	}
 }
 
@@ -62,43 +53,56 @@ func Accept(client *SocketClient) {
 			break
 		}
 		// 分发数据
-		senderId := strconv.Itoa(int(client.UserId))
-		Dispatch(senderId, data, true)
+		//Dispatch(client.UserId, data, true)
+		SendUser(client.UserId, data)
 	}
 }
 
-func Dispatch(senderId string, data []byte, isLocal bool) {
-	//fmt.Println("接受到数据", string(data))
-
-	// 解析数据
-	type objType struct {
-		Type string `json:"type"`
+func Dispatch(data []byte) {
+	fmt.Println("分发原始数据", string(data))
+	type Content struct {
+		SenderId int64  `json:"sender_id"`
+		TargetId int64  `json:"target_id"`
+		Type     string `json:"type"`
 	}
-
-	t := objType{}
-	err := json.Unmarshal(data, &t)
-	if err != nil { //类型错误: 缺少type
-		t.Type = "lack-type"
+	c := Content{}
+	err := json.Unmarshal(data, &c)
+	if err != nil {
+		zap.S().Errorf("错误的消息类型")
+		return
 	}
-
-	switch t.Type {
-	case enum.ObjTypePrivate:
-		o := resource.PrivateObject{}
-		d := o.Decode(data)
-
-		fmt.Printf("向用户发送私聊消息: %s\n", d.TargetId)
-		SendUser(d.TargetId, data, isLocal)
-	default:
-		fmt.Printf("用户发送的消息类型不支持: %s\n", senderId)
-		SendUser(senderId, []byte(fmt.Sprintf("暂不支持的消息类型, 内容: %s,", data)), isLocal)
+	switch c.Type {
+	case enum.ObjTypePrivate: // 私聊消息
+		SendUser(c.TargetId, data)
+	default: // 默认私聊消息
+		SendUser(c.TargetId, data)
 	}
 }
 
-func getClientUserIds() []int64 {
-	var res []int64
-	for k, _ := range UserClient {
-		u, _ := strconv.Atoi(k)
-		res = append(res, int64(u))
-	}
-	return res
-}
+//func Dispatch(senderId int64, data []byte) {
+//	//fmt.Println("接受到数据", string(data))
+//
+//	// 解析数据
+//	type objType struct {
+//		Type string `json:"type"`
+//	}
+//
+//	t := objType{}
+//	err := json.Unmarshal(data, &t)
+//	if err != nil { //类型错误: 缺少type
+//		t.Type = "lack-type"
+//	}
+//
+//	switch t.Type {
+//	case enum.ObjTypePrivate:
+//		o := resource.PrivateObject{}
+//		d := o.Decode(data)
+//
+//		fmt.Printf("向用户发送私聊消息: %s\n", d.TargetId)
+//		SendUser(d.TargetId, data, isLocal)
+//
+//	default:
+//		fmt.Printf("用户发送的消息类型不支持: %s\n", senderId)
+//		SendUser(senderId, []byte(fmt.Sprintf("暂不支持的消息类型, 内容: %s,", data)), isLocal)
+//	}
+//}

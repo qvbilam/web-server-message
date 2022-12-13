@@ -73,25 +73,9 @@ func ConsumeQueue(queueName string) {
 	}
 
 	for msg := range deliveries {
-		//fmt.Printf("read message: %s\n", msg.Body)
+		fmt.Printf("read message: %s\n", msg.Body)
 		// 传递到消息
-		Dispatch("system", msg.Body, false)
-	}
-}
-
-// PushExchange 发送交换机消息
-func PushExchange(exchangeName string, body []byte) {
-	ch, _ := global.MessageQueueClient.Channel()
-	if err := ch.Publish(
-		exchangeName,
-		"",
-		false,
-		false,
-		amqp.Publishing{
-			Body: body,
-		},
-	); err != nil {
-		fmt.Printf("send exchange message err: %s", err)
+		Dispatch(msg.Body)
 	}
 }
 
@@ -109,10 +93,4 @@ func PushQueue(queueName string, body []byte) {
 	if err != nil {
 		fmt.Printf("send queue message err: %s", err)
 	}
-}
-
-// MessagePushExchange 广播
-func MessagePushExchange(body []byte) {
-	exchangeName := global.ServerConfig.RabbitMQServerConfig.MessageExchangeName
-	PushExchange(exchangeName, body)
 }

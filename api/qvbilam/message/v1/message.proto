@@ -7,28 +7,32 @@ message MessageResponse {
   string UID = 1;
   string Type = 2;
   string Content = 3;
+  string Url = 4;
+  string extra = 5;
 }
 
 message MessageRequest {
   string Type = 1;
   string Content = 2;
+  string Url = 3;
+  string extra = 4;
 }
 
 message CreatePrivateRequest {
-  string UserId = 1;
-  string TargetUserId = 2;
+  int64 UserId = 1;
+  int64 TargetUserId = 2;
   MessageRequest Message = 3;
 }
 
 message CreateRoomRequest {
-  string UserId = 1;
-  string RoomId = 2;
+  int64 UserId = 1;
+  int64 RoomId = 2;
   MessageRequest Message = 3;
 }
 
 message CreateGroupRequest{
-  string UserId = 1;
-  string GroupId = 2;
+  int64 UserId = 1;
+  int64 GroupId = 2;
   MessageRequest Message = 3;
 }
 

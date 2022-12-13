@@ -1,12 +1,15 @@
 package ws
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"go.uber.org/zap"
+	proto "message/api/qvbilam/message/v1"
 	"message/business"
 	"message/enum"
-	"message/resource"
+	"message/global"
 	"net/http"
 	"strconv"
 )
@@ -38,31 +41,44 @@ func Handel(ctx *gin.Context) {
 	fmt.Printf("用户: %s 链接成功\n", paramUserId)
 
 	// 创建频道
-	clientUserId := strconv.Itoa(int(userId))
-	business.UserClient[clientUserId] = &business.SocketClient{
+	business.UserClient[userId] = &business.SocketClient{
 		UserId:           userId,
 		Conn:             conn,
 		UserMessageQueue: make(chan []byte, 50),
 	}
-	useClient := business.UserClient[clientUserId]
+	useClient := business.UserClient[userId]
 
 	// 发送数据
 	go business.Write(useClient)
 	// 接受数据
-	go business.Accept(business.UserClient[clientUserId])
+	go business.Accept(business.UserClient[userId])
 
 	// 发送用户信息
-	privateObj := resource.PrivateObject{
-		SendUserId: "system",
-		TargetId:   fmt.Sprintf("%d", userId),
-		ObjectName: enum.MsgTypeTxt,
-		Content: resource.Text{
-			Content: "你好，欢迎链接",
-			User:    resource.User{},
-			Extra:   "",
+	//privateObj := resource.PrivateObject{
+	//	SendUserId: "system",
+	//	TargetId:   fmt.Sprintf("%d", userId),
+	//	ObjectName: enum.MsgTypeTxt,
+	//	Content: resource.Text{
+	//		Content: "你好，欢迎链接",
+	//		User:    resource.User{},
+	//		Extra:   "",
+	//	},
+	//}
+	//business.SendUser(clientUserId, privateObj.Encode(), true)
+	fmt.Printf("准备发送消息")
+	_, err = global.MessageServerClient.CreatePrivateMessage(context.Background(), &proto.CreatePrivateRequest{
+		UserId:       1,
+		TargetUserId: userId,
+		Message: &proto.MessageRequest{
+			Type:    enum.MsgTypeTxt,
+			Content: "链接成功",
 		},
+	})
+	fmt.Printf("准备发送消息完成")
+	if err != nil {
+		zap.S().Errorf("发送消息失败: %s", err.Error())
 	}
-	business.SendUser(clientUserId, privateObj.Encode(), true)
+	fmt.Printf("用户: %d, 向用户: %d 发送消息\n", 1, userId)
 
 	<-ch
 }
