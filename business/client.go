@@ -16,7 +16,7 @@ type SocketClient struct {
 
 var UserClient map[int64]*SocketClient = make(map[int64]*SocketClient, 0)
 
-// SendUser 用户消息推送到队列
+// SendUser 用户消息推送到队列 {"send_user_id":3,"target_id":4,"type":"private","content":{"type":"TextMsg","content":"你好啊， 我是3","user":{"id":1,"code":5721,"nickname":"QvBiLam106907","avatar":"https://blogupy.qvbilam.xin/bg/6666.JPG","gender":"male","extra":""},"extra":""}}
 func SendUser(userId int64, message []byte) {
 	client, exists := UserClient[userId]
 
@@ -25,6 +25,11 @@ func SendUser(userId int64, message []byte) {
 		fmt.Printf("[info]尝试向本机用户: %d, 发送消息\n", userId)
 		return
 	}
+}
+
+func SendRoom(roomId int64, message []byte) {
+	// todo 获取房间的用户
+	// 循环 sendUser
 }
 
 // Write 推送消息
@@ -54,7 +59,7 @@ func Accept(client *SocketClient) {
 		}
 		// 分发数据
 		//Dispatch(client.UserId, data, true)
-		SendUser(client.UserId, data)
+		Dispatch(data)
 	}
 }
 
