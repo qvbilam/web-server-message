@@ -54,27 +54,16 @@ func Handel(ctx *gin.Context) {
 	go business.Accept(business.UserClient[userId])
 
 	// 发送用户信息
-	//privateObj := resource.PrivateObject{
-	//	SendUserId: "system",
-	//	TargetId:   fmt.Sprintf("%d", userId),
-	//	ObjectName: enum.MsgTypeTxt,
-	//	Content: resource.Text{
-	//		Content: "你好，欢迎链接",
-	//		User:    resource.User{},
-	//		Extra:   "",
-	//	},
-	//}
-	//business.SendUser(clientUserId, privateObj.Encode(), true)
 	fmt.Printf("准备发送消息")
 	_, err = global.MessageServerClient.CreatePrivateMessage(context.Background(), &proto.CreatePrivateRequest{
 		UserId:       1,
 		TargetUserId: userId,
 		Message: &proto.MessageRequest{
 			Type:    enum.MsgTypeTxt,
-			Content: "链接成功",
+			Content: "连接成功",
 		},
 	})
-	fmt.Printf("准备发送消息完成")
+
 	if err != nil {
 		zap.S().Errorf("发送消息失败: %s", err.Error())
 	}

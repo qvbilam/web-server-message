@@ -51,6 +51,7 @@ func Accept(client *SocketClient) {
 		_, data, err := client.Conn.ReadMessage()
 		if err != nil {
 			if websocket.IsCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
+				// todo 处理用户退出连接
 				fmt.Printf("[info]退出链接, 用户:%d: \n", client.UserId)
 				break
 			}
@@ -83,31 +84,3 @@ func Dispatch(data []byte) {
 		SendUser(c.TargetId, data)
 	}
 }
-
-//func Dispatch(senderId int64, data []byte) {
-//	//fmt.Println("接受到数据", string(data))
-//
-//	// 解析数据
-//	type objType struct {
-//		Type string `json:"type"`
-//	}
-//
-//	t := objType{}
-//	err := json.Unmarshal(data, &t)
-//	if err != nil { //类型错误: 缺少type
-//		t.Type = "lack-type"
-//	}
-//
-//	switch t.Type {
-//	case enum.ObjTypePrivate:
-//		o := resource.PrivateObject{}
-//		d := o.Decode(data)
-//
-//		fmt.Printf("向用户发送私聊消息: %s\n", d.TargetId)
-//		SendUser(d.TargetId, data, isLocal)
-//
-//	default:
-//		fmt.Printf("用户发送的消息类型不支持: %s\n", senderId)
-//		SendUser(senderId, []byte(fmt.Sprintf("暂不支持的消息类型, 内容: %s,", data)), isLocal)
-//	}
-//}
