@@ -1,7 +1,7 @@
 syntax = "proto3";
 package messagePb.v1;
 import "google/protobuf/empty.proto";
-option go_package="message/api/qvbilam/page/v1;pageV1";
+option go_package="message/api/qvbilam/message/v1;messageV1";
 
 message MessageResponse {
   string UID = 1;
