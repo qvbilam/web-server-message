@@ -33,3 +33,29 @@ func PrivateSend(ctx *gin.Context) {
 	}
 	SuccessNotContent(ctx)
 }
+
+func GroupSend(ctx *gin.Context) {
+	// todo 获取登陆用户id
+	userId := 2
+
+	request := validate.GroupValidate{}
+	if err := ctx.ShouldBind(&request); err != nil {
+		HandleValidateError(ctx, err)
+		return
+	}
+	_, err := global.MessageServerClient.CreateGroupMessage(context.Background(), &proto.CreateGroupRequest{
+		UserId:  int64(userId),
+		GroupId: request.GroupId,
+		Message: &proto.MessageRequest{
+			Type:    request.ContentType,
+			Content: request.Content,
+			Url:     request.Url,
+			Extra:   request.Extra,
+		},
+	})
+	if err != nil {
+		HandleGrpcErrorToHttp(ctx, err)
+		return
+	}
+	SuccessNotContent(ctx)
+}

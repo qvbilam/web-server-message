@@ -21,7 +21,7 @@ func InitRouters() *gin.Engine {
 	router.GET("/ws", ws.Handel)
 
 	apiRouter := router.Group("")
-	messageRouter.InitPrivateRouter(apiRouter)
+	messageRouter.InitMessageRouter(apiRouter)
 
 	return router
 }

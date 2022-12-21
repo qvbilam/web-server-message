@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
-	"message/enum"
 )
 
 type SocketClient struct {
@@ -67,6 +66,7 @@ func Accept(client *SocketClient) {
 func Dispatch(data []byte) {
 	fmt.Println("分发原始数据", string(data))
 	type Content struct {
+		UserId   int64  `json:"user_id"`
 		SenderId int64  `json:"sender_id"`
 		TargetId int64  `json:"target_id"`
 		Type     string `json:"type"`
@@ -77,10 +77,14 @@ func Dispatch(data []byte) {
 		zap.S().Errorf("错误的消息类型")
 		return
 	}
-	switch c.Type {
-	case enum.ObjTypePrivate: // 私聊消息
-		SendUser(c.TargetId, data)
-	default: // 默认私聊消息
-		SendUser(c.TargetId, data)
-	}
+
+	SendUser(c.UserId, data)
+
+	// 不用区分类型, 任何类型都训话发送用户
+	//switch c.Type {
+	//case enum.ObjTypePrivate: // 私聊消息
+	//	SendUser(c.TargetId, data)
+	//default: // 默认私聊消息
+	//	SendUser(c.TargetId, data)
+	//}
 }

@@ -5,9 +5,11 @@ import (
 	"message/api"
 )
 
-func InitPrivateRouter(Router *gin.RouterGroup) {
-	PrivateRouter := Router.Group("message/private")
+func InitMessageRouter(Router *gin.RouterGroup) {
+	MessageRouter := Router.Group("message/")
 	{
-		PrivateRouter.POST("publish", api.PrivateSend)
+		MessageRouter.POST("private/publish", api.PrivateSend)
+
+		MessageRouter.POST("group/publish", api.GroupSend)
 	}
 }
