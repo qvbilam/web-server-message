@@ -4,7 +4,7 @@
 // - protoc             v3.19.4
 // source: message.proto
 
-package pageV1
+package messageV1
 
 import (
 	context "context"
