@@ -56,10 +56,10 @@ func Handel(ctx *gin.Context) {
 	// 发送用户信息
 	fmt.Printf("准备发送消息")
 	_, err = global.MessageServerClient.CreatePrivateMessage(context.Background(), &proto.CreatePrivateRequest{
-		UserId:       1,
+		UserId:       0,
 		TargetUserId: userId,
 		Message: &proto.MessageRequest{
-			Type:    enum.MsgTypeTxt,
+			Type:    enum.TipMsgType,
 			Content: "连接成功",
 		},
 	})

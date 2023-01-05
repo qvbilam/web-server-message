@@ -15,3 +15,4 @@ const MsgTypeReference = "ReferenceMsg" // 引用消息
 const MsgTypeCombineMsg = "CombineMsg"  // 合并转发消息
 
 const CmdMsgType = "CmdMsg" // 命令消息
+const TipMsgType = "TipMsg" // 提示消息
