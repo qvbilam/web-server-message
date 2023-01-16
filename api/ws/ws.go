@@ -55,9 +55,8 @@ func Handel(ctx *gin.Context) {
 
 	// 发送用户信息
 	fmt.Printf("准备发送消息")
-	_, err = global.MessageServerClient.CreatePrivateMessage(context.Background(), &proto.CreatePrivateRequest{
-		UserId:       0,
-		TargetUserId: userId,
+	_, err = global.MessageServerClient.CreateTipMessage(context.Background(), &proto.CreateTipRequest{
+		UserId: userId,
 		Message: &proto.MessageRequest{
 			Type:    enum.TipMsgType,
 			Content: "连接成功",

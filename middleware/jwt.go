@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"message/api"
 	userProto "message/api/qvbilam/user/v1"
@@ -16,6 +17,8 @@ func Auth() gin.HandlerFunc {
 		})
 
 		if err != nil {
+			fmt.Println(ctx.Request.Header.Get("Authorization"))
+			fmt.Println("让你登录呢")
 			api.HandleValidateError(ctx, err)
 			ctx.Abort()
 			return

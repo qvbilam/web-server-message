@@ -23,6 +23,7 @@ func Send(ctx *gin.Context) {
 		UserId:  userID,
 		GroupId: request.GroupId,
 		Message: &proto.MessageRequest{
+			Code:    request.Code,
 			Type:    request.ContentType,
 			Content: request.Content,
 			Url:     request.Url,

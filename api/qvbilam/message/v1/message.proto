@@ -60,6 +60,12 @@ message QueueResponse {
   string ExchangeName = 2;
 }
 
+message CreateUserBroadcastRequest {
+  string object = 1;
+  repeated int64 userIds = 2;
+  MessageRequest message = 3;
+}
+
 service Message {
   rpc CreateQueue (UpdateQueueRequest) returns (QueueResponse);
   rpc UpdateQueue (UpdateQueueRequest) returns (google.protobuf.Empty);
@@ -75,4 +81,6 @@ service Message {
 
   rpc CreateSystemMessage(CreateSystemRequest) returns (google.protobuf.Empty);
   rpc CreateTipMessage(CreateTipRequest) returns (google.protobuf.Empty);
+
+  rpc CreateUserBroadcastMessage(CreateUserBroadcastRequest) returns (google.protobuf.Empty);
 }

@@ -34,6 +34,7 @@ type MessageClient interface {
 	CreateGroupTipMessage(ctx context.Context, in *CreateGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CreateSystemMessage(ctx context.Context, in *CreateSystemRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CreateTipMessage(ctx context.Context, in *CreateTipRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CreateUserBroadcastMessage(ctx context.Context, in *CreateUserBroadcastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type messageClient struct {
@@ -143,6 +144,15 @@ func (c *messageClient) CreateTipMessage(ctx context.Context, in *CreateTipReque
 	return out, nil
 }
 
+func (c *messageClient) CreateUserBroadcastMessage(ctx context.Context, in *CreateUserBroadcastRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/messagePb.v1.Message/CreateUserBroadcastMessage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MessageServer is the server API for Message service.
 // All implementations must embed UnimplementedMessageServer
 // for forward compatibility
@@ -158,6 +168,7 @@ type MessageServer interface {
 	CreateGroupTipMessage(context.Context, *CreateGroupRequest) (*emptypb.Empty, error)
 	CreateSystemMessage(context.Context, *CreateSystemRequest) (*emptypb.Empty, error)
 	CreateTipMessage(context.Context, *CreateTipRequest) (*emptypb.Empty, error)
+	CreateUserBroadcastMessage(context.Context, *CreateUserBroadcastRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedMessageServer()
 }
 
@@ -197,6 +208,9 @@ func (UnimplementedMessageServer) CreateSystemMessage(context.Context, *CreateSy
 }
 func (UnimplementedMessageServer) CreateTipMessage(context.Context, *CreateTipRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTipMessage not implemented")
+}
+func (UnimplementedMessageServer) CreateUserBroadcastMessage(context.Context, *CreateUserBroadcastRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUserBroadcastMessage not implemented")
 }
 func (UnimplementedMessageServer) mustEmbedUnimplementedMessageServer() {}
 
@@ -409,6 +423,24 @@ func _Message_CreateTipMessage_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Message_CreateUserBroadcastMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserBroadcastRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServer).CreateUserBroadcastMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/messagePb.v1.Message/CreateUserBroadcastMessage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServer).CreateUserBroadcastMessage(ctx, req.(*CreateUserBroadcastRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Message_ServiceDesc is the grpc.ServiceDesc for Message service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -459,6 +491,10 @@ var Message_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateTipMessage",
 			Handler:    _Message_CreateTipMessage_Handler,
+		},
+		{
+			MethodName: "CreateUserBroadcastMessage",
+			Handler:    _Message_CreateUserBroadcastMessage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

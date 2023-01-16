@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"message/api/broadcast"
 	"message/api/group"
 	"message/api/private"
 	"message/middleware"
@@ -17,5 +18,8 @@ func InitMessageRouter(Router *gin.RouterGroup) {
 		MessageRouter.POST("group/publish", group.Send)
 		MessageRouter.POST("group/publish/txt", group.SendText)
 		MessageRouter.POST("group/publish/img", group.SendImage)
+
+		MessageRouter.POST("broadcast/user/publish", broadcast.SendUsers)
+		MessageRouter.POST("broadcast/online/publish", broadcast.SendOnlineUsers)
 	}
 }

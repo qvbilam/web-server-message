@@ -19,6 +19,7 @@ func Send(ctx *gin.Context) {
 	}
 
 	mb := business.MessageBusiness{
+		Code:        request.Code,
 		ContentType: request.ContentType,
 		Content:     request.Content,
 		Url:         request.Url,
@@ -26,7 +27,7 @@ func Send(ctx *gin.Context) {
 	}
 	b := business.PrivateBusiness{
 		UserId:       userID,
-		TargetUserId: request.TargetUserId,
+		TargetUserId: request.UserId,
 		Message:      &mb,
 	}
 
@@ -56,7 +57,7 @@ func SendText(ctx *gin.Context) {
 	}
 	b := business.PrivateBusiness{
 		UserId:       userID,
-		TargetUserId: request.TargetUserId,
+		TargetUserId: request.UserId,
 		Message:      &mb,
 	}
 
@@ -86,7 +87,7 @@ func SendImage(ctx *gin.Context) {
 	}
 	b := business.PrivateBusiness{
 		UserId:       userID,
-		TargetUserId: request.TargetUserId,
+		TargetUserId: request.UserId,
 		Message:      &mb,
 	}
 
