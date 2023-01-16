@@ -38,6 +38,17 @@ message CreateGroupRequest{
   MessageRequest Message = 3;
 }
 
+message CreateSystemRequest {
+  string object = 1;
+  int64 UserId = 2;
+  MessageRequest Message = 3;
+}
+
+message CreateTipRequest {
+  int64 UserId = 1;
+  MessageRequest Message = 2;
+}
+
 message UpdateQueueRequest {
   string Name = 1;
   string ExchangeName = 2;
@@ -61,4 +72,7 @@ service Message {
   rpc CreateGroupTxtMessage(CreateGroupRequest) returns (google.protobuf.Empty);
   rpc CreateGroupCmdMessage(CreateGroupRequest) returns (google.protobuf.Empty);
   rpc CreateGroupTipMessage(CreateGroupRequest) returns (google.protobuf.Empty);
+
+  rpc CreateSystemMessage(CreateSystemRequest) returns (google.protobuf.Empty);
+  rpc CreateTipMessage(CreateTipRequest) returns (google.protobuf.Empty);
 }
