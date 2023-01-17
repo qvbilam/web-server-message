@@ -5,11 +5,14 @@ option go_package="message/api/qvbilam/message/v1;messageV1";
 
 message MessageResponse {
   string UID = 1;
-  int64 code = 2;
-  string type = 3;
-  string content = 4;
-  string url = 5;
-  string extra = 6;
+  string type = 2;
+  string introduce = 3; // 对象里的content
+  string content = 4; // message.content
+}
+
+message MessagesResponse {
+  int64 total = 1;
+  repeated MessageResponse messages = 2;
 }
 
 message MessageRequest {
@@ -60,10 +63,14 @@ message QueueResponse {
   string ExchangeName = 2;
 }
 
-message CreateUserBroadcastRequest {
-  string object = 1;
-  repeated int64 userIds = 2;
-  MessageRequest message = 3;
+message GetGroupMessageRequest {
+  int64 userId = 1;
+  int64 groupId = 2;
+}
+
+message GetPrivateMessageRequest {
+  int64 userId = 1;
+  int64 targetUserId = 2;
 }
 
 service Message {
@@ -72,15 +79,15 @@ service Message {
   rpc DeleteQueue (UpdateQueueRequest) returns (google.protobuf.Empty);
   rpc CreatePrivateMessage (CreatePrivateRequest) returns (google.protobuf.Empty);
   rpc CreateRoomMessage(CreateRoomRequest) returns (google.protobuf.Empty);
+  rpc GetPrivateMessage(GetPrivateMessageRequest) returns (MessagesResponse);
 
 
   rpc CreateGroupMessage(CreateGroupRequest) returns (google.protobuf.Empty);
   rpc CreateGroupTxtMessage(CreateGroupRequest) returns (google.protobuf.Empty);
   rpc CreateGroupCmdMessage(CreateGroupRequest) returns (google.protobuf.Empty);
   rpc CreateGroupTipMessage(CreateGroupRequest) returns (google.protobuf.Empty);
+  rpc GetGroupMessage(GetGroupMessageRequest) returns (MessagesResponse);
 
   rpc CreateSystemMessage(CreateSystemRequest) returns (google.protobuf.Empty);
   rpc CreateTipMessage(CreateTipRequest) returns (google.protobuf.Empty);
-
-  rpc CreateUserBroadcastMessage(CreateUserBroadcastRequest) returns (google.protobuf.Empty);
 }
