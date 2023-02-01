@@ -73,6 +73,12 @@ message GetPrivateMessageRequest {
   int64 targetUserId = 2;
 }
 
+message CreateBroadcastUserRequest {
+  int64 userId = 1;
+  repeated int64 userIds = 2;
+  MessageRequest Message = 3;
+}
+
 service Message {
   rpc CreateQueue (UpdateQueueRequest) returns (QueueResponse);
   rpc UpdateQueue (UpdateQueueRequest) returns (google.protobuf.Empty);
@@ -81,6 +87,8 @@ service Message {
   rpc CreateRoomMessage(CreateRoomRequest) returns (google.protobuf.Empty);
   rpc GetPrivateMessage(GetPrivateMessageRequest) returns (MessagesResponse);
 
+
+  rpc CreateBroadcastUserMessage(CreateBroadcastUserRequest) returns (google.protobuf.Empty);
 
   rpc CreateGroupMessage(CreateGroupRequest) returns (google.protobuf.Empty);
   rpc CreateGroupTxtMessage(CreateGroupRequest) returns (google.protobuf.Empty);

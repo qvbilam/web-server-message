@@ -29,6 +29,7 @@ type MessageClient interface {
 	CreatePrivateMessage(ctx context.Context, in *CreatePrivateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CreateRoomMessage(ctx context.Context, in *CreateRoomRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetPrivateMessage(ctx context.Context, in *GetPrivateMessageRequest, opts ...grpc.CallOption) (*MessagesResponse, error)
+	CreateBroadcastUserMessage(ctx context.Context, in *CreateBroadcastUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CreateGroupMessage(ctx context.Context, in *CreateGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CreateGroupTxtMessage(ctx context.Context, in *CreateGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	CreateGroupCmdMessage(ctx context.Context, in *CreateGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -94,6 +95,15 @@ func (c *messageClient) CreateRoomMessage(ctx context.Context, in *CreateRoomReq
 func (c *messageClient) GetPrivateMessage(ctx context.Context, in *GetPrivateMessageRequest, opts ...grpc.CallOption) (*MessagesResponse, error) {
 	out := new(MessagesResponse)
 	err := c.cc.Invoke(ctx, "/messagePb.v1.Message/GetPrivateMessage", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *messageClient) CreateBroadcastUserMessage(ctx context.Context, in *CreateBroadcastUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/messagePb.v1.Message/CreateBroadcastUserMessage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -173,6 +183,7 @@ type MessageServer interface {
 	CreatePrivateMessage(context.Context, *CreatePrivateRequest) (*emptypb.Empty, error)
 	CreateRoomMessage(context.Context, *CreateRoomRequest) (*emptypb.Empty, error)
 	GetPrivateMessage(context.Context, *GetPrivateMessageRequest) (*MessagesResponse, error)
+	CreateBroadcastUserMessage(context.Context, *CreateBroadcastUserRequest) (*emptypb.Empty, error)
 	CreateGroupMessage(context.Context, *CreateGroupRequest) (*emptypb.Empty, error)
 	CreateGroupTxtMessage(context.Context, *CreateGroupRequest) (*emptypb.Empty, error)
 	CreateGroupCmdMessage(context.Context, *CreateGroupRequest) (*emptypb.Empty, error)
@@ -204,6 +215,9 @@ func (UnimplementedMessageServer) CreateRoomMessage(context.Context, *CreateRoom
 }
 func (UnimplementedMessageServer) GetPrivateMessage(context.Context, *GetPrivateMessageRequest) (*MessagesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrivateMessage not implemented")
+}
+func (UnimplementedMessageServer) CreateBroadcastUserMessage(context.Context, *CreateBroadcastUserRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateBroadcastUserMessage not implemented")
 }
 func (UnimplementedMessageServer) CreateGroupMessage(context.Context, *CreateGroupRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGroupMessage not implemented")
@@ -343,6 +357,24 @@ func _Message_GetPrivateMessage_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MessageServer).GetPrivateMessage(ctx, req.(*GetPrivateMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Message_CreateBroadcastUserMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateBroadcastUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServer).CreateBroadcastUserMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/messagePb.v1.Message/CreateBroadcastUserMessage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServer).CreateBroadcastUserMessage(ctx, req.(*CreateBroadcastUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -503,6 +535,10 @@ var Message_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPrivateMessage",
 			Handler:    _Message_GetPrivateMessage_Handler,
+		},
+		{
+			MethodName: "CreateBroadcastUserMessage",
+			Handler:    _Message_CreateBroadcastUserMessage_Handler,
 		},
 		{
 			MethodName: "CreateGroupMessage",

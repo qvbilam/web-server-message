@@ -48,7 +48,7 @@ func (b *BroadcastUserBusiness) SendOnline() error {
 }
 
 func (b *BroadcastUserBusiness) Send() error {
-	_, err := global.MessageServerClient.CreateUserBroadcastMessage(context.Background(), &proto.CreateUserBroadcastRequest{
+	_, err := global.MessageServerClient.CreateBroadcastUserMessage(context.Background(), &proto.CreateBroadcastUserRequest{
 		UserIds: b.UserIds,
 		Message: &proto.MessageRequest{
 			Code:    b.MessageBusiness.Code,
