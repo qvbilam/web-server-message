@@ -1,12 +1,25 @@
 package private
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"message/api"
+	proto "message/api/qvbilam/message/v1"
 	"message/business"
 	"message/enum"
+	"message/global"
 	"message/validate"
 )
+
+func message(ctx *gin.Context) {
+	uID, _ := ctx.Get("userId")
+	userID := uID.(int64)
+
+	global.MessageServerClient.GetPrivateMessage(context.Background(), &proto.GetPrivateMessageRequest{
+		UserId:       userID,
+		TargetUserId: 0,
+	})
+}
 
 func Send(ctx *gin.Context) {
 	uID, _ := ctx.Get("userId")

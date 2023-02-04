@@ -1,6 +1,7 @@
 syntax = "proto3";
 package messagePb.v1;
 import "google/protobuf/empty.proto";
+import "api/qvbilam/page/v1/page.proto";
 option go_package="message/api/qvbilam/message/v1;messageV1";
 
 message MessageResponse {
@@ -66,11 +67,17 @@ message QueueResponse {
 message GetGroupMessageRequest {
   int64 userId = 1;
   int64 groupId = 2;
+  string keyword = 3;
+  string type = 4;
+  pagePb.v1.PageRequest page = 5;
 }
 
 message GetPrivateMessageRequest {
   int64 userId = 1;
   int64 targetUserId = 2;
+  string keyword = 3;
+  string type = 4;
+  pagePb.v1.PageRequest page = 5;
 }
 
 message CreateBroadcastUserRequest {
