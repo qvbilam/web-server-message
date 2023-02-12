@@ -62,3 +62,17 @@ type GroupCustomValidate struct {
 	Code        int64  `form:"code" json:"code" binding:"omitempty"`
 	Extra       string `form:"extra" json:"extra" binding:"omitempty"`
 }
+
+type GetPrivateMessageValidate struct {
+	Keyword string `form:"keyword" json:"keyword" binding:"omitempty"`
+	Type    string `form:"type" json:"type" binding:"omitempty"`
+	Page    int64  `form:"page" json:"page" binding:"omitempty"`
+	PerPage int64  `form:"per_page" json:"per_page" binding:"omitempty"`
+}
+
+type GetGroupMessageValidate struct {
+	Keyword string `form:"keyword" json:"keyword" binding:"omitempty"`
+	Type    string `form:"type" json:"type" binding:"omitempty"`
+	Page    int64  `form:"page" json:"page" binding:"omitempty"`
+	PerPage int64  `form:"per_page" json:"per_page" binding:"omitempty"`
+}

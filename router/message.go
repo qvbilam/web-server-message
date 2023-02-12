@@ -11,10 +11,12 @@ import (
 func InitMessageRouter(Router *gin.RouterGroup) {
 	MessageRouter := Router.Group("message/").Use(middleware.Cors()).Use(middleware.Auth())
 	{
+		MessageRouter.GET("private/:id", private.Message)
 		MessageRouter.POST("private/publish", private.Send)
 		MessageRouter.POST("private/publish/txt", private.SendText)
 		MessageRouter.POST("private/publish/img", private.SendImage)
 
+		MessageRouter.GET("group/:id", group.Message)
 		MessageRouter.POST("group/publish", group.Send)
 		MessageRouter.POST("group/publish/txt", group.SendText)
 		MessageRouter.POST("group/publish/img", group.SendImage)

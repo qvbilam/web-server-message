@@ -5,20 +5,53 @@ import (
 	"github.com/gin-gonic/gin"
 	"message/api"
 	proto "message/api/qvbilam/message/v1"
+	pageProto "message/api/qvbilam/page/v1"
 	"message/business"
 	"message/enum"
 	"message/global"
+	"message/resource"
 	"message/validate"
+	"strconv"
 )
 
-func message(ctx *gin.Context) {
+func Message(ctx *gin.Context) {
 	uID, _ := ctx.Get("userId")
 	userID := uID.(int64)
 
-	global.MessageServerClient.GetPrivateMessage(context.Background(), &proto.GetPrivateMessageRequest{
+	// 接受用户
+	targetId := ctx.Param("id")
+	targetUserId, _ := strconv.ParseInt(targetId, 10, 64)
+
+	request := validate.GetPrivateMessageValidate{}
+	if err := ctx.ShouldBind(&request); err != nil {
+		api.HandleValidateError(ctx, err)
+		return
+	}
+
+	if request.Page <= 0 {
+		request.Page = 1
+	}
+	if request.PerPage <= 0 {
+		request.PerPage = 10
+	}
+
+	msg, err := global.MessageServerClient.GetPrivateMessage(context.Background(), &proto.GetPrivateMessageRequest{
 		UserId:       userID,
-		TargetUserId: 0,
+		TargetUserId: targetUserId,
+		Type:         request.Type,
+		Keyword:      request.Keyword,
+		Page: &pageProto.PageRequest{
+			Page:    request.Page,
+			PerPage: request.PerPage,
+		},
 	})
+	if err != nil {
+		api.HandleGrpcErrorToHttp(ctx, err)
+		return
+	}
+
+	res := resource.MessagesResource{}
+	api.SuccessNotMessage(ctx, res.Resource(msg))
 }
 
 func Send(ctx *gin.Context) {

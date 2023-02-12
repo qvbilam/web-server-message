@@ -5,10 +5,12 @@ import "api/qvbilam/page/v1/page.proto";
 option go_package="message/api/qvbilam/message/v1;messageV1";
 
 message MessageResponse {
-  string UID = 1;
-  string type = 2;
-  string introduce = 3; // 对象里的content
-  string content = 4; // message.content
+  int64 userId = 1; // 发送用户
+  string UID = 2;
+  string type = 3;
+  string introduce = 4; // 对象里的content
+  string content = 5; // message.content
+  int64 createdTime = 6;
 }
 
 message MessagesResponse {
