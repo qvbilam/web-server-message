@@ -10,6 +10,7 @@ import (
 	"message/enum"
 	"message/global"
 	"strconv"
+	"time"
 )
 
 func InitQueue() {
@@ -21,11 +22,17 @@ func InitQueue() {
 	url := fmt.Sprintf("amqp://%s:%s@%s:%d", user, password, host, port)
 	conn, err := amqp.Dial(url)
 	if err != nil {
-		zap.S().Fatalf("%s dial error: %s", "队列服务", err)
-		panic(any(err))
+		//zap.S().Fatalf("%s dial error: %s", "队列服务", err)
+		//panic(any(err))
+		zap.S().Errorf("%s dial error: %s", "队列服务", err)
+		return
 	}
 
 	global.MessageQueueClient = conn
+	if global.MessageQueueClient.IsClosed() {
+		return
+	}
+
 	suffix := global.ServerConfig.RabbitMQServerConfig.QueueSuffix
 	if suffix == "" {
 		suffix = strconv.Itoa(int(global.ServerConfig.Port))
@@ -58,4 +65,35 @@ func InitQueue() {
 
 	// 接受消息
 	go business.ConsumeQueue(queueName)
+}
+
+func InitQueueHealth() {
+
+	// 监听状态
+	closeChan := make(chan *amqp.Error, 1)
+	notifyClose := global.MessageQueueClient.NotifyClose(closeChan)
+
+	// 健康检查
+	timer := time.NewTimer(5 * time.Second)
+
+	for {
+		select {
+		case e := <-notifyClose:
+			if e != nil {
+				fmt.Printf("chan通道错误,e:%+v\n", e)
+				InitQueue()
+			}
+			//close(closeChan)
+			//InitQueue()
+		case <-timer.C:
+			//timer.Reset(time.Second * time.Duration(rand.Intn(5)))
+			timer.Reset(time.Second * 5)
+			if global.MessageQueueClient.IsClosed() == true {
+				fmt.Printf("定期检查错误，尝试重启\n")
+				InitQueue()
+			}
+			//fmt.Printf("定时检测rabbitMq: %d\n", time.Now().Second())
+		}
+	}
+
 }

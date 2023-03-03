@@ -28,6 +28,7 @@ func main() {
 	initialize.InitServer()
 	// 初始化队列
 	initialize.InitQueue()
+	go initialize.InitQueueHealth()
 
 	Name := global.ServerConfig.Name
 	Host := "0.0.0.0"
