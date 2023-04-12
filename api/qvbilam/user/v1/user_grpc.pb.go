@@ -32,6 +32,7 @@ type UserClient interface {
 	//  rpc Login(LoginRequest) returns (UserResponse); // 登陆
 	//  rpc Logout(GetUserRequest) returns (google.protobuf.Empty);
 	Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	LevelExp(ctx context.Context, in *LevelExpRequest, opts ...grpc.CallOption) (*LevelExpResponse, error)
 }
 
 type userClient struct {
@@ -105,6 +106,15 @@ func (c *userClient) Auth(ctx context.Context, in *AuthRequest, opts ...grpc.Cal
 	return out, nil
 }
 
+func (c *userClient) LevelExp(ctx context.Context, in *LevelExpRequest, opts ...grpc.CallOption) (*LevelExpResponse, error) {
+	out := new(LevelExpResponse)
+	err := c.cc.Invoke(ctx, "/userPb.v1.User/LevelExp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -118,6 +128,7 @@ type UserServer interface {
 	//  rpc Login(LoginRequest) returns (UserResponse); // 登陆
 	//  rpc Logout(GetUserRequest) returns (google.protobuf.Empty);
 	Auth(context.Context, *AuthRequest) (*UserResponse, error)
+	LevelExp(context.Context, *LevelExpRequest) (*LevelExpResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -145,6 +156,9 @@ func (UnimplementedUserServer) Search(context.Context, *SearchRequest) (*UsersRe
 }
 func (UnimplementedUserServer) Auth(context.Context, *AuthRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
+}
+func (UnimplementedUserServer) LevelExp(context.Context, *LevelExpRequest) (*LevelExpResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LevelExp not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -285,6 +299,24 @@ func _User_Auth_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_LevelExp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LevelExpRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).LevelExp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userPb.v1.User/LevelExp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).LevelExp(ctx, req.(*LevelExpRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -319,6 +351,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Auth",
 			Handler:    _User_Auth_Handler,
+		},
+		{
+			MethodName: "LevelExp",
+			Handler:    _User_LevelExp_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
