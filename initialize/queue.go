@@ -14,10 +14,10 @@ import (
 )
 
 func InitQueue() {
-	user := "admin"
-	password := "admin"
-	host := "127.0.0.1"
-	port := 5672
+	user := global.ServerConfig.RabbitMQServerConfig.User
+	password := global.ServerConfig.RabbitMQServerConfig.Password
+	host := global.ServerConfig.RabbitMQServerConfig.Host
+	port := global.ServerConfig.RabbitMQServerConfig.Port
 
 	url := fmt.Sprintf("amqp://%s:%s@%s:%d", user, password, host, port)
 	conn, err := amqp.Dial(url)

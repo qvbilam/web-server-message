@@ -26,6 +26,8 @@ type RabbitMQServerConfig struct {
 	Host                string `mapstructure:"host" json:"host"`
 	Port                int64  `mapstructure:"port" json:"port"`
 	Name                string `mapstructure:"name" json:"name"`
+	User                string `mapstructure:"user" json:"user"`
+	Password            string `mapstructure:"password" json:"password"`
 	QueueSuffix         string `mapstructure:"queue_suffix" json:"queue_suffix"`
 	MessageExchangeName string
 	MessageQueueName    string
