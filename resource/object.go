@@ -14,7 +14,7 @@ type PrivateObject struct {
 }
 
 func (o *PrivateObject) Encode() []byte {
-	o.Type = enum.ObjTypePrivate
+	o.Type = enum.ObjTypeUser
 	body, _ := json.Marshal(o)
 	return body
 }

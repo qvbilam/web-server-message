@@ -76,3 +76,7 @@ type GetGroupMessageValidate struct {
 	Page    int64  `form:"page" json:"page" binding:"omitempty"`
 	PerPage int64  `form:"per_page" json:"per_page" binding:"omitempty"`
 }
+
+type ReadMessageValidate struct {
+	MessageUid string `form:"message_uid" json:"message_uid" binding:"required"`
+}

@@ -144,3 +144,47 @@ func SendImage(ctx *gin.Context) {
 
 	api.SuccessNotContent(ctx)
 }
+
+func Read(ctx *gin.Context) {
+	uID, _ := ctx.Get("userId")
+	userID := uID.(int64)
+
+	request := validate.ReadMessageValidate{}
+	if err := ctx.ShouldBind(&request); err != nil {
+		api.HandleValidateError(ctx, err)
+		return
+	}
+
+	_, err := global.MessageServerClient.ReadPrivateMessage(context.Background(), &proto.ReadPrivateMessageRequest{
+		UserId:     userID,
+		MessageUid: request.MessageUid,
+	})
+	if err != nil {
+		api.HandleGrpcErrorToHttp(ctx, err)
+		return
+	}
+
+	api.SuccessNotContent(ctx)
+}
+
+func Rollback(ctx *gin.Context) {
+	uID, _ := ctx.Get("userId")
+	userID := uID.(int64)
+
+	request := validate.ReadMessageValidate{}
+	if err := ctx.ShouldBind(&request); err != nil {
+		api.HandleValidateError(ctx, err)
+		return
+	}
+
+	_, err := global.MessageServerClient.RollbackMessage(context.Background(), &proto.RollbackMessageRequest{
+		UserId:     userID,
+		MessageUid: request.MessageUid,
+		ObjectType: enum.ObjTypeUser,
+	})
+	if err != nil {
+		api.HandleGrpcErrorToHttp(ctx, err)
+		return
+	}
+	api.SuccessNotContent(ctx)
+}

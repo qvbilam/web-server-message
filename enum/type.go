@@ -1,6 +1,6 @@
 package enum
 
-const ObjTypePrivate = "private"
+const ObjTypeUser = "user"
 const ObjTypeRoom = "room"
 const ObjTypeGroup = "group"
 

@@ -15,6 +15,8 @@ func InitMessageRouter(Router *gin.RouterGroup) {
 		MessageRouter.POST("private/publish", private.Send)
 		MessageRouter.POST("private/publish/txt", private.SendText)
 		MessageRouter.POST("private/publish/img", private.SendImage)
+		MessageRouter.POST("private/read", private.Read)
+		MessageRouter.POST("private/rollback", private.Rollback)
 
 		MessageRouter.GET("group/:id", group.Message)
 		MessageRouter.POST("group/publish", group.Send)

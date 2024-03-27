@@ -88,6 +88,18 @@ message CreateBroadcastUserRequest {
   MessageRequest Message = 3;
 }
 
+message RollbackMessageRequest {
+  int64 userId = 1;
+  string messageUid = 2;
+  string ObjectType = 3;
+  int64 ObjectId = 4;
+}
+
+message ReadPrivateMessageRequest {
+  int64 userId = 1;
+  string messageUid = 2;
+}
+
 service Message {
   rpc CreateQueue (UpdateQueueRequest) returns (QueueResponse);
   rpc UpdateQueue (UpdateQueueRequest) returns (google.protobuf.Empty);
@@ -107,4 +119,8 @@ service Message {
 
   rpc CreateSystemMessage(CreateSystemRequest) returns (google.protobuf.Empty);
   rpc CreateTipMessage(CreateTipRequest) returns (google.protobuf.Empty);
+  // 撤回消息
+  rpc RollbackMessage(RollbackMessageRequest) returns (google.protobuf.Empty);
+  // 已读私聊消息
+  rpc ReadPrivateMessage(ReadPrivateMessageRequest) returns (google.protobuf.Empty);
 }
