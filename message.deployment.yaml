@@ -1,0 +1,102 @@
+# user.deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: message-web
+  labels:
+    app: message-web
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: message-web
+  template:
+    metadata:
+      labels:
+        app: message-web
+        version: v1.0
+    spec:
+      containers:
+        - name: message-web
+          image: registry.cn-hangzhou.aliyuncs.com/qvbilam/web-server-message:1.0.0
+          imagePullPolicy: Always
+          ports: # 容器内部使用端口
+            - containerPort: 9501
+          env:
+            # 服务配置
+            - name: SERVER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: server_name
+                  name: message-web
+            # rabbitmq
+            - name: RABBITMQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq_host
+                  name: message-web
+            - name: RABBITMQ_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq_port
+                  name: message-web
+            - name: RABBITMQ_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq_name
+                  name: message-web
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq_user
+                  name: message-web
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq_password
+                  name: message-web
+            - name: RABBITMQ_QUEUE_SUFFIX
+              valueFrom:
+                secretKeyRef:
+                  key: rabbitmq_queue_suffix
+                  name: message-web
+            # user-server 配置
+            - name: USER_SERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: user_server_host
+                  name: message-web
+            - name: USER_SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: user_server_port
+                  name: message-web
+            - name: USER_SERVER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: user_server_name
+                  name: message-web
+            # message-server 配置
+            - name: MESSAGE_SERVER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: message_server_host
+                  name: message-web
+            - name: MESSAGE_SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: message_server_port
+                  name: message-web
+            - name: MESSAGE_SERVER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: message_server_name
+                  name: message-web
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+      imagePullSecrets:
+        - name: ali-image-key

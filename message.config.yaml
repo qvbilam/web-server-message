@@ -1,0 +1,18 @@
+apiVersion: "v1"
+kind: ConfigMap
+metadata:
+  name: message-web
+  labels:
+    app: message-web
+data:
+  # 服务配置
+  server_name: "message-web"
+  server_host: "0.0.0.0"
+  # user-server
+  user_server_name: "user-server"
+  user_server_host: "user-server"
+  user_server_port: "9801"
+  # public-server
+  message_server_name: "message-server"
+  message_server_host: "message-server"
+  message_server_port: "9804"

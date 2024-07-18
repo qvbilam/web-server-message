@@ -15,13 +15,14 @@ import (
 func InitConfig() {
 	initEnvConfig()
 	initViperConfig()
-	initFlagConfig()
+	// initFlagConfig()
 }
 
 func initEnvConfig() {
 	serverPort, _ := strconv.Atoi(os.Getenv("PORT"))
-	userServerPort, _ := strconv.Atoi(os.Getenv("USER-SERVER_PORT"))
-	messageServerPort, _ := strconv.Atoi(os.Getenv("MESSAGE-SERVER_PORT"))
+	userServerPort, _ := strconv.Atoi(os.Getenv("USER_SERVER_PORT"))
+	messageServerPort, _ := strconv.Atoi(os.Getenv("MESSAGE_SERVER_PORT"))
+	rabbitMQPort, _ := strconv.Atoi(os.Getenv("RABBITMQ_PORT"))
 
 	if global.ServerConfig == nil {
 		global.ServerConfig = &config.ServerConfig{}
@@ -31,13 +32,20 @@ func initEnvConfig() {
 	global.ServerConfig.Host = "0.0.0.0"
 	global.ServerConfig.Port = int64(serverPort)
 
-	global.ServerConfig.UserServerConfig.Name = os.Getenv("USER-SERVER_HOST")
-	global.ServerConfig.UserServerConfig.Host = os.Getenv("USER-SERVER_NAME")
+	global.ServerConfig.UserServerConfig.Name = os.Getenv("USER_SERVER_HOST")
+	global.ServerConfig.UserServerConfig.Host = os.Getenv("USER_SERVER_NAME")
 	global.ServerConfig.UserServerConfig.Port = int64(userServerPort)
 
-	global.ServerConfig.MessageServerConfig.Name = os.Getenv("MESSAGE-SERVER_HOST")
-	global.ServerConfig.MessageServerConfig.Host = os.Getenv("MESSAGE-SERVER_NAME")
+	global.ServerConfig.MessageServerConfig.Name = os.Getenv("MESSAGE_SERVER_HOST")
+	global.ServerConfig.MessageServerConfig.Host = os.Getenv("MESSAGE_SERVER_NAME")
 	global.ServerConfig.MessageServerConfig.Port = int64(messageServerPort)
+
+	global.ServerConfig.RabbitMQServerConfig.Host = os.Getenv("RABBITMQ_HOST")
+	global.ServerConfig.RabbitMQServerConfig.Port = int64(rabbitMQPort)
+	global.ServerConfig.RabbitMQServerConfig.Name = os.Getenv("RABBITMQ_NAME")
+	global.ServerConfig.RabbitMQServerConfig.User = os.Getenv("RABBITMQ_USER")
+	global.ServerConfig.RabbitMQServerConfig.Password = os.Getenv("RABBITMQ_PASSWORD")
+	global.ServerConfig.RabbitMQServerConfig.QueueSuffix = os.Getenv("RABBITMQ_QUEUE_SUFFIX")
 }
 
 // initViperConfig 初始化配置 > viper 配置包
