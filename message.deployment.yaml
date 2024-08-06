@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: message-web
-          image: registry.cn-hangzhou.aliyuncs.com/qvbilam/web-server-message:1.0.0
+          image: registry.cn-hangzhou.aliyuncs.com/qvbilam/web-server-message:1.0
           imagePullPolicy: Always
           ports: # 容器内部使用端口
             - containerPort: 9501

@@ -2,6 +2,7 @@ package private
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"message/api"
 	proto "message/api/qvbilam/message/v1"
@@ -21,6 +22,7 @@ func Message(ctx *gin.Context) {
 	// 接受用户
 	targetId := ctx.Param("id")
 	targetUserId, _ := strconv.ParseInt(targetId, 10, 64)
+	fmt.Println(1)
 
 	request := validate.GetPrivateMessageValidate{}
 	if err := ctx.ShouldBind(&request); err != nil {
@@ -35,6 +37,9 @@ func Message(ctx *gin.Context) {
 		request.PerPage = 10
 	}
 
+	fmt.Println(2)
+	fmt.Println(global.ServerConfig.MessageServerConfig.Host)
+	fmt.Println(global.ServerConfig.MessageServerConfig.Port)
 	msg, err := global.MessageServerClient.GetPrivateMessage(context.Background(), &proto.GetPrivateMessageRequest{
 		UserId:       userID,
 		TargetUserId: targetUserId,
@@ -45,12 +50,17 @@ func Message(ctx *gin.Context) {
 			PerPage: request.PerPage,
 		},
 	})
+	fmt.Println(3)
 	if err != nil {
+		fmt.Println(4)
+		fmt.Println(err.Error())
 		api.HandleGrpcErrorToHttp(ctx, err)
 		return
 	}
 
+	fmt.Println(5)
 	res := resource.MessagesResource{}
+	fmt.Println(6)
 	api.SuccessNotMessage(ctx, res.Resource(msg))
 }
 

@@ -42,7 +42,7 @@ func clientOption() []retry.CallOption {
 	opts := []retry.CallOption{
 		retry.WithBackoff(retry.BackoffLinear(100 * time.Millisecond)), // 重试间隔
 		retry.WithMax(3), // 最大重试次数
-		retry.WithPerRetryTimeout(1 * time.Second),                                 // 请求超时时间
+		retry.WithPerRetryTimeout(5 * time.Second),                                 // 请求超时时间
 		retry.WithCodes(codes.NotFound, codes.DeadlineExceeded, codes.Unavailable), // 指定返回码重试
 	}
 	return opts

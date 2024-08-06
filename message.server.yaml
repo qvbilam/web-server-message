@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: message-web-server
+  labels:
+    app: qvbilam-http
 spec:
   selector:
     app: message-web
